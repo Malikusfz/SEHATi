@@ -23,8 +23,9 @@ struct Patient
     vector<int> doctorIds;
 };
 
-vector<Doctor> doctors;
 vector<Patient> patients;
+vector<Patient> emergencyPatients; // Separate vector for emergency patients
+vector<Doctor> doctors;
 int doctorIdCounter = 1;
 int patientIdCounter = 1;
 
@@ -153,17 +154,6 @@ void showPatientList()
 
 void displayEmergencyPatients()
 {
-    vector<Patient> emergencyPatients;
-
-    // Find patients with only one assigned doctor (emergency patients)
-    for (const Patient &patient : patients)
-    {
-        if (patient.doctorIds.size() == 1)
-        {
-            emergencyPatients.push_back(patient);
-        }
-    }
-
     if (emergencyPatients.empty())
     {
         cout << "Tidak ada pasien darurat saat ini.\n";
@@ -189,6 +179,7 @@ void displayEmergencyPatients()
         }
     }
 }
+
 
 // Function to display all data
 void displayData()
@@ -260,7 +251,7 @@ void handleEmergencyPatient()
         auto minPatientsDoctor = min_element(doctors.begin(), doctors.end(),
                                              [](const Doctor &a, const Doctor &b)
                                              {
-                                                 return a.patients.size() < b.patients.size();
+                                                 return a.patientIds.size() < b.patientIds.size();
                                              });
 
         if (minPatientsDoctor != doctors.end())
@@ -270,11 +261,10 @@ void handleEmergencyPatient()
             emergencyPatient.name = emergencyName;
             emergencyPatient.age = emergencyAge;
             emergencyPatient.gender = emergencyGender;
-            emergencyPatient.doctorIds.push_back(minPatientsDoctor->id);
 
-            minPatientsDoctor->patients.push_back(emergencyName);
+            minPatientsDoctor->patientIds.push_back(emergencyPatient.id);
 
-            patients.push_back(emergencyPatient);
+            emergencyPatients.push_back(emergencyPatient); // Add emergency patient to separate vector
 
             cout << "Pasien darurat berhasil ditambahkan (ID: " << emergencyPatient.id << "): " << emergencyPatient.name << endl;
             cout << "Dalam penanganan oleh dokter: " << minPatientsDoctor->name << endl;
@@ -289,7 +279,6 @@ void handleEmergencyPatient()
         cout << "Tidak ada dokter yang tersedia saat ini.\n";
     }
 }
-
 
 
 void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
