@@ -261,8 +261,9 @@ void handleEmergencyPatient()
             emergencyPatient.name = emergencyName;
             emergencyPatient.age = emergencyAge;
             emergencyPatient.gender = emergencyGender;
+            emergencyPatient.doctorIds.push_back(minPatientsDoctor->id); // Assign the emergency patient to the doctor with the fewest patients
 
-            minPatientsDoctor->patients.push_back(emergencyPatient.name);
+            minPatientsDoctor->patients.push_back(emergencyName); // Add the emergency patient to the doctor's patients
 
             emergencyPatients.push_back(emergencyPatient); // Add emergency patient to separate vector
 
@@ -279,6 +280,7 @@ void handleEmergencyPatient()
         cout << "Tidak ada dokter yang tersedia saat ini.\n";
     }
 }
+
 
 void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
 {
