@@ -216,9 +216,13 @@ void handleEmergencyPatient()
         {
             Patient emergencyPatient = patients.front();
             patients.erase(patients.begin());
+
+            // Generate a unique ID for the emergency patient
+            string emergencyId = "E" + to_string(doctorIdCounter++);
+
             minPatientsDoctor->patients.push_back(emergencyPatient.name);
 
-            cout << "Pasien darurat saat ini: " << emergencyPatient.name << endl;
+            cout << "Pasien darurat saat ini (ID: " << emergencyId << "): " << emergencyPatient.name << endl;
             cout << "Dalam penanganan oleh dokter: " << minPatientsDoctor->name << endl;
         }
         else
@@ -231,6 +235,7 @@ void handleEmergencyPatient()
         cout << "Tidak ada pasien darurat saat ini.\n";
     }
 }
+
 
 void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
 {
