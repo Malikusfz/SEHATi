@@ -254,7 +254,7 @@ void handleEmergencyPatient()
     cout << "Kelamin Pasien Darurat (L/P): ";
     cin >> emergencyGender;
 
-    if (!patients.empty())
+    if (!doctors.empty())
     {
         // Find the doctor with the fewest patients
         auto minPatientsDoctor = min_element(doctors.begin(), doctors.end(),
@@ -286,7 +286,7 @@ void handleEmergencyPatient()
     }
     else
     {
-        cout << "Tidak ada pasien darurat saat ini.\n";
+        cout << "Tidak ada dokter yang tersedia saat ini.\n";
     }
 }
 
