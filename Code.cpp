@@ -156,6 +156,7 @@ void displayData()
 {
     displayDatadoc();
     showPatientList();
+    displayEmergencyPatients();
 }
 
 // Function to display and sort doctors based on the number of patients they have
@@ -203,6 +204,17 @@ void findPatientsByDoctor(const int doctorId)
 // Function to handle emergency patients
 void handleEmergencyPatient()
 {
+    string emergencyName;
+    int emergencyAge;
+    char emergencyGender;
+
+    cout << "Nama Pasien Darurat: ";
+    getline(cin, emergencyName);
+    cout << "Umur Pasien Darurat: ";
+    cin >> emergencyAge;
+    cout << "Kelamin Pasien Darurat (L/P): ";
+    cin >> emergencyGender;
+
     if (!patients.empty())
     {
         // Find the doctor with the fewest patients
@@ -214,15 +226,18 @@ void handleEmergencyPatient()
 
         if (minPatientsDoctor != doctors.end())
         {
-            Patient emergencyPatient = patients.front();
-            patients.erase(patients.begin());
+            Patient emergencyPatient;
+            emergencyPatient.id = patientIdCounter++;
+            emergencyPatient.name = emergencyName;
+            emergencyPatient.age = emergencyAge;
+            emergencyPatient.gender = emergencyGender;
+            emergencyPatient.doctorIds.push_back(minPatientsDoctor->id);
 
-            // Generate a unique ID for the emergency patient
-            string emergencyId = "E" + to_string(doctorIdCounter++);
+            minPatientsDoctor->patients.push_back(emergencyName);
 
-            minPatientsDoctor->patients.push_back(emergencyPatient.name);
+            patients.push_back(emergencyPatient);
 
-            cout << "Pasien darurat saat ini (ID: " << emergencyId << "): " << emergencyPatient.name << endl;
+            cout << "Pasien darurat berhasil ditambahkan (ID: " << emergencyPatient.id << "): " << emergencyPatient.name << endl;
             cout << "Dalam penanganan oleh dokter: " << minPatientsDoctor->name << endl;
         }
         else
@@ -235,6 +250,7 @@ void handleEmergencyPatient()
         cout << "Tidak ada pasien darurat saat ini.\n";
     }
 }
+
 
 
 void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
@@ -272,6 +288,46 @@ void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
         if (newDoctorIt != doctors.end())
         {
             newDoctorIt->patients.push_back(patientName);
+        }
+    }
+}
+
+// Function to display emergency patients
+void displayEmergencyPatients()
+{
+    vector<Patient> emergencyPatients;
+
+    // Find patients with only one assigned doctor (emergency patients)
+    for (const Patient &patient : patients)
+    {
+        if (patient.doctorIds.size() == 1)
+        {
+            emergencyPatients.push_back(patient);
+        }
+    }
+
+    if (emergencyPatients.empty())
+    {
+        cout << "Tidak ada pasien darurat saat ini.\n";
+    }
+    else
+    {
+        cout << "Daftar Pasien Darurat:\n";
+        for (const Patient &patient : emergencyPatients)
+        {
+            cout << "ID Pasien: " << patient.id << " || Nama: " << patient.name << " || Umur: " << patient.age << " || Kelamin: " << patient.gender << " || Dokter: ";
+            for (int doctorId : patient.doctorIds)
+            {
+                for (const Doctor &doctor : doctors)
+                {
+                    if (doctor.id == doctorId)
+                    {
+                        cout << doctor.name << " ";
+                        break;
+                    }
+                }
+            }
+            cout << endl;
         }
     }
 }
@@ -351,6 +407,7 @@ int main()
         else if (choice == 5)
         {
             displayData();
+            
         }
         else if (choice == 6)
         {
@@ -368,6 +425,7 @@ int main()
 
         else if (choice == 8)
         {
+            displayEmergencyPatients();
             handleEmergencyPatient();
         }
         else if (choice == 9)
