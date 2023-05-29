@@ -151,6 +151,45 @@ void showPatientList()
     }
 }
 
+void displayEmergencyPatients()
+{
+    vector<Patient> emergencyPatients;
+
+    // Find patients with only one assigned doctor (emergency patients)
+    for (const Patient &patient : patients)
+    {
+        if (patient.doctorIds.size() == 1)
+        {
+            emergencyPatients.push_back(patient);
+        }
+    }
+
+    if (emergencyPatients.empty())
+    {
+        cout << "Tidak ada pasien darurat saat ini.\n";
+    }
+    else
+    {
+        cout << "Daftar Pasien Darurat:\n";
+        for (const Patient &patient : emergencyPatients)
+        {
+            cout << "ID Pasien: " << patient.id << " || Nama: " << patient.name << " || Umur: " << patient.age << " || Kelamin: " << patient.gender << " || Dokter: ";
+            for (int doctorId : patient.doctorIds)
+            {
+                for (const Doctor &doctor : doctors)
+                {
+                    if (doctor.id == doctorId)
+                    {
+                        cout << doctor.name << " ";
+                        break;
+                    }
+                }
+            }
+            cout << endl;
+        }
+    }
+}
+
 // Function to display all data
 void displayData()
 {
@@ -292,45 +331,6 @@ void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
     }
 }
 
-// Function to display emergency patients
-void displayEmergencyPatients()
-{
-    vector<Patient> emergencyPatients;
-
-    // Find patients with only one assigned doctor (emergency patients)
-    for (const Patient &patient : patients)
-    {
-        if (patient.doctorIds.size() == 1)
-        {
-            emergencyPatients.push_back(patient);
-        }
-    }
-
-    if (emergencyPatients.empty())
-    {
-        cout << "Tidak ada pasien darurat saat ini.\n";
-    }
-    else
-    {
-        cout << "Daftar Pasien Darurat:\n";
-        for (const Patient &patient : emergencyPatients)
-        {
-            cout << "ID Pasien: " << patient.id << " || Nama: " << patient.name << " || Umur: " << patient.age << " || Kelamin: " << patient.gender << " || Dokter: ";
-            for (int doctorId : patient.doctorIds)
-            {
-                for (const Doctor &doctor : doctors)
-                {
-                    if (doctor.id == doctorId)
-                    {
-                        cout << doctor.name << " ";
-                        break;
-                    }
-                }
-            }
-            cout << endl;
-        }
-    }
-}
 
 int main()
 {
