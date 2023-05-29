@@ -257,7 +257,7 @@ void handleEmergencyPatient()
         if (minPatientsDoctor != doctors.end())
         {
             Patient emergencyPatient;
-            emergencyPatient.id = patientIdCounter++;
+            emergencyPatient.id = "E" + to_string(patientIdCounter++); // Set emergency patient ID with "E" prefix and a number
             emergencyPatient.name = emergencyName;
             emergencyPatient.age = emergencyAge;
             emergencyPatient.gender = emergencyGender;
@@ -280,6 +280,7 @@ void handleEmergencyPatient()
         cout << "Tidak ada dokter yang tersedia saat ini.\n";
     }
 }
+
 
 
 void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
