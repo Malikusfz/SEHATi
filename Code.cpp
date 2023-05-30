@@ -261,9 +261,8 @@ void handleEmergencyPatient()
             emergencyPatient.name = emergencyName;
             emergencyPatient.age = emergencyAge;
             emergencyPatient.gender = emergencyGender;
-            emergencyPatient.doctorIds.push_back(minPatientsDoctor->id); // Assign the emergency patient to the doctor with the fewest patients
 
-            minPatientsDoctor->patients.push_back(emergencyName); // Add the emergency patient to the doctor's patients
+            minPatientsDoctor->patients.push_back(emergencyPatient.name);
 
             emergencyPatients.push_back(emergencyPatient); // Add emergency patient to separate vector
 
@@ -281,8 +280,11 @@ void handleEmergencyPatient()
     }
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> parent of b051f09 (fix the emergency patient dont show docter name)
 void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
 {
     // Find the patient
