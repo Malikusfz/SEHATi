@@ -12,6 +12,7 @@ struct Doctor
     string name;
     string specialist;
     vector<string> patients;
+    
 };
 
 struct Patient
@@ -268,22 +269,74 @@ void findPatientsByDoctor(const int doctorId)
 
 void removePatientByDoctorQueue(int doctorId)
 {
-    queue<int> patientIdsToRemove;
-    for (const Patient &patient : patients)
+    // Find the doctor
+    auto doctorIt = find_if(doctors.begin(), doctors.end(),
+        [&](const Doctor &doctor)
+        { return doctor.id == doctorId; });
+
+    if (doctorIt != doctors.end())
     {
-        if (find(patient.doctorIds.begin(), patient.doctorIds.end(), doctorId) != patient.doctorIds.end())
+        // Check if the doctor has any patients
+        if (!doctorIt->patients.empty())
         {
-            patientIdsToRemove.push(patient.id);
+            // Find the first emergency patient
+            auto emergencyPatientIt = find_if(doctorIt->patients.begin(), doctorIt->patients.end(),
+                [&](const string &patientName)
+                {
+                    auto patientIt = find_if(patients.begin(), patients.end(),
+                        [&](const Patient &patient)
+                        { return patient.name == patientName; });
+                    return (patientIt != patients.end() && patientIt->isEmergency);
+                });
+
+            // If an emergency patient is found, remove them
+            if (emergencyPatientIt != doctorIt->patients.end())
+            {
+                const string &patientName = *emergencyPatientIt;
+
+                // Find the patient by name
+                auto patientIt = find_if(patients.begin(), patients.end(),
+                    [&](const Patient &patient)
+                    { return patient.name == patientName; });
+
+                if (patientIt != patients.end())
+                {
+                    int patientId = patientIt->id;
+
+                    // Remove the patient from the doctor's list
+                    doctorIt->patients.erase(emergencyPatientIt);
+
+                    // Remove the patient from the overall patient list
+                    removePatient(patientId);
+                }
+            }
+            else // If no emergency patient is found, remove the first non-emergency patient
+            {
+                const string &patientName = doctorIt->patients.front();
+
+                // Find the patient by name
+                auto patientIt = find_if(patients.begin(), patients.end(),
+                    [&](const Patient &patient)
+                    { return patient.name == patientName; });
+
+                if (patientIt != patients.end())
+                {
+                    int patientId = patientIt->id;
+
+                    // Remove the patient from the doctor's list
+                    doctorIt->patients.erase(doctorIt->patients.begin());
+
+                    // Remove the patient from the overall patient list
+                    removePatient(patientId);
+                }
+            }
         }
     }
-
-    while (!patientIdsToRemove.empty())
-    {
-        int patientId = patientIdsToRemove.front();
-        patientIdsToRemove.pop();
-        removePatient(patientId);
-    }
 }
+
+
+
+
 
 // Function to handle emergency patients
 void handleEmergencyPatient()
@@ -533,6 +586,7 @@ int main()
             cout << "ID Dokter: ";
             cin >> doctorId;
             removePatientByDoctorQueue(doctorId);
+            cin.ignore();
         }
         else if (choice == 0)
         {
