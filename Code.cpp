@@ -12,7 +12,6 @@ struct Doctor
     string name;
     string specialist;
     vector<string> patients;
-    
 };
 
 struct Patient
@@ -271,8 +270,8 @@ void removePatientByDoctorQueue(int doctorId)
 {
     // Find the doctor
     auto doctorIt = find_if(doctors.begin(), doctors.end(),
-        [&](const Doctor &doctor)
-        { return doctor.id == doctorId; });
+                            [&](const Doctor &doctor)
+                            { return doctor.id == doctorId; });
 
     if (doctorIt != doctors.end())
     {
@@ -281,13 +280,13 @@ void removePatientByDoctorQueue(int doctorId)
         {
             // Find the first emergency patient
             auto emergencyPatientIt = find_if(doctorIt->patients.begin(), doctorIt->patients.end(),
-                [&](const string &patientName)
-                {
-                    auto patientIt = find_if(patients.begin(), patients.end(),
-                        [&](const Patient &patient)
-                        { return patient.name == patientName; });
-                    return (patientIt != patients.end() && patientIt->isEmergency);
-                });
+                                              [&](const string &patientName)
+                                              {
+                                                  auto patientIt = find_if(patients.begin(), patients.end(),
+                                                                           [&](const Patient &patient)
+                                                                           { return patient.name == patientName; });
+                                                  return (patientIt != patients.end() && patientIt->isEmergency);
+                                              });
 
             // If an emergency patient is found, remove them
             if (emergencyPatientIt != doctorIt->patients.end())
@@ -296,8 +295,8 @@ void removePatientByDoctorQueue(int doctorId)
 
                 // Find the patient by name
                 auto patientIt = find_if(patients.begin(), patients.end(),
-                    [&](const Patient &patient)
-                    { return patient.name == patientName; });
+                                         [&](const Patient &patient)
+                                         { return patient.name == patientName; });
 
                 if (patientIt != patients.end())
                 {
@@ -316,8 +315,8 @@ void removePatientByDoctorQueue(int doctorId)
 
                 // Find the patient by name
                 auto patientIt = find_if(patients.begin(), patients.end(),
-                    [&](const Patient &patient)
-                    { return patient.name == patientName; });
+                                         [&](const Patient &patient)
+                                         { return patient.name == patientName; });
 
                 if (patientIt != patients.end())
                 {
@@ -334,10 +333,6 @@ void removePatientByDoctorQueue(int doctorId)
     }
 }
 
-
-
-
-
 // Function to handle emergency patients
 void handleEmergencyPatient()
 {
@@ -347,7 +342,6 @@ void handleEmergencyPatient()
                                          {
                                              return a.patients.size() < b.patients.size();
                                          });
-
     if (minPatientsDoctor != doctors.end())
     {
         // Input data pasien darurat
