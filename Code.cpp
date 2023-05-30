@@ -23,9 +23,8 @@ struct Patient
     vector<int> doctorIds;
 };
 
-vector<Patient> patients;
-vector<Patient> emergencyPatients; // Separate vector for emergency patients
 vector<Doctor> doctors;
+vector<Patient> patients;
 int doctorIdCounter = 1;
 int patientIdCounter = 1;
 
@@ -152,40 +151,11 @@ void showPatientList()
     }
 }
 
-void displayEmergencyPatients()
-{
-    if (emergencyPatients.empty())
-    {
-        cout << "Tidak ada pasien darurat saat ini.\n";
-    }
-    else
-    {
-        cout << "Daftar Pasien Darurat:\n";
-        for (const Patient &patient : emergencyPatients)
-        {
-            cout << "ID Pasien: " << patient.id << " || Nama: " << patient.name << " || Umur: " << patient.age << " || Kelamin: " << patient.gender << " || Dokter: ";
-            for (int doctorId : patient.doctorIds)
-            {
-                for (const Doctor &doctor : doctors)
-                {
-                    if (doctor.id == doctorId)
-                    {
-                        cout << doctor.name << " ";
-                        break;
-                    }
-                }
-            }
-            cout << endl;
-        }
-    }
-}
-
 // Function to display all data
 void displayData()
 {
     displayDatadoc();
     showPatientList();
-    displayEmergencyPatients();
 }
 
 // Function to display and sort doctors based on the number of patients they have
@@ -196,7 +166,7 @@ void displaySortedDoctors()
     sort(sortedDoctors.begin(), sortedDoctors.end(),
          [](const Doctor &a, const Doctor &b)
          { return a.patients.size() > b.patients.size(); });
-
+    
     cout << "Daftar Dokter (urut berdasarkan jumlah pasien):\n";
     for (const Doctor &doctor : sortedDoctors)
     {
@@ -215,8 +185,7 @@ void findPatientsByDoctor(const int doctorId)
             doctorFound = true;
             system("cls");
             /* cout << "Banyak nya pasien yang di tanganin oleh dokter " << doctor.id << ": " << doctor.patients.size() << endl; // Debugging statement */
-            cout << "Pasien yang ditangani oleh Dokter: " << doctor.name << "\n"
-                 << "Banyaknya: " << doctor.patients.size() << "\n";
+            cout << "Pasien yang ditangani oleh Dokter: " << doctor.name <<"\n" << "Banyaknya: "<< doctor.patients.size() << "\n";
             for (const string &patient : doctor.patients)
             {
                 cout << patient << endl;
@@ -234,19 +203,7 @@ void findPatientsByDoctor(const int doctorId)
 // Function to handle emergency patients
 void handleEmergencyPatient()
 {
-    string emergencyName;
-    int emergencyAge;
-    char emergencyGender;
-
-    cout << "Nama Pasien Darurat: ";
-    getline(cin, emergencyName);
-    cout << "Umur Pasien Darurat: ";
-    cin >> emergencyAge;
-    cout << "Kelamin Pasien Darurat (L/P): ";
-    cin >> emergencyGender;
-
-    if (!doctors.empty())
-    {
+    
         // Find the doctor with the fewest patients
         auto minPatientsDoctor = min_element(doctors.begin(), doctors.end(),
                                              [](const Doctor &a, const Doctor &b)
@@ -256,38 +213,44 @@ void handleEmergencyPatient()
 
         if (minPatientsDoctor != doctors.end())
         {
+            // Input data pasien darurat
+            string emergencyPatientName;
+            int emergencyPatientAge;
+            char emergencyPatientGender;
+
+            cout << "Masukkan data pasien darurat:\n";
+            cout << "Nama: ";
+            cin.ignore();
+            getline(cin, emergencyPatientName);
+            cout << "Umur: ";
+            cin >> emergencyPatientAge;
+            cout << "Kelamin (L/P): ";
+            cin >> emergencyPatientGender;
+
+            // Buat objek pasien darurat
             Patient emergencyPatient;
-            emergencyPatient.id = "E" + to_string(patientIdCounter++); // Set emergency patient ID with "E" prefix and a number
-            emergencyPatient.name = emergencyName;
-            emergencyPatient.age = emergencyAge;
-            emergencyPatient.gender = emergencyGender;
+            emergencyPatient.id = patientIdCounter++;
+            emergencyPatient.name = emergencyPatientName;
+            emergencyPatient.age = emergencyPatientAge;
+            emergencyPatient.gender = emergencyPatientGender;
+            emergencyPatient.doctorIds.push_back(minPatientsDoctor->id);
 
-            minPatientsDoctor->patients.push_back(emergencyPatient.name);
+            // Tambahkan pasien darurat ke daftar pasien
+            patients.push_back(emergencyPatient);
 
-            emergencyPatients.push_back(emergencyPatient); // Add emergency patient to separate vector
+            // Tambahkan pasien darurat ke dokter yang menanganinya
+            minPatientsDoctor->patients.push_back(emergencyPatientName);
 
-            cout << "Pasien darurat berhasil ditambahkan (ID: " << emergencyPatient.id << "): " << emergencyPatient.name << endl;
-            cout << "Dalam penanganan oleh dokter: " << minPatientsDoctor->name << endl;
+            cout << "Pasien darurat " << emergencyPatientName << " ditangani oleh dokter " << minPatientsDoctor->name << endl;
         }
         else
         {
             cout << "Tidak ada dokter yang tersedia saat ini.\n";
         }
-    }
-    else
-    {
-        cout << "Tidak ada dokter yang tersedia saat ini.\n";
-    }
+    
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-
-=======
->>>>>>> parent of b051f09 (fix the emergency patient dont show docter name)
-=======
->>>>>>> parent of b051f09 (fix the emergency patient dont show docter name)
 void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
 {
     // Find the patient
@@ -337,7 +300,7 @@ int main()
     do
     {
         cout << "\n";
-        cout << "Sistem Informasi Rumah Sakit\n";
+        cout << "Sistem Informasi Rumah Sakit SEHATi\n";
         cout << "=======================================================\n";
         cout << "1. Tambah Dokter\n";
         cout << "2. Tambah Pasien\n";
@@ -373,7 +336,6 @@ int main()
             cin.ignore(); // Clear the newline character from the input buffer
             cout << "Kelamin (L/P): ";
             cin >> gender;
-            cin.ignore();
             displayDatadoc();
             cout << "ID Dokter yang menangani: ";
             int doctorId;
@@ -420,7 +382,6 @@ int main()
 
         else if (choice == 8)
         {
-            displayEmergencyPatients();
             handleEmergencyPatient();
         }
         else if (choice == 9)
