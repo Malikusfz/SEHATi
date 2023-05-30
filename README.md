@@ -33,19 +33,5 @@ Beberapa catatan penting:
 •	Data dokter dan pasien akan ditampilkan dalam format yang mudah dibaca di layar.
 
 
-## Penggunaan
-
-Setelah menjalankan program, Anda akan melihat menu pilihan yang tersedia. Anda dapat memilih angka yang sesuai dengan pilihan yang diinginkan dan mengikuti instruksi yang ditampilkan.
-Beberapa catatan penting:
-
-•	Saat menambahkan dokter atau pasien, Anda akan diminta untuk memasukkan data yang diperlukan seperti nama, usia, jenis kelamin, dan ID dokter yang menangani pasien.
-
-•	ID dokter dan pasien secara otomatis akan dihasilkan oleh sistem.
-
-•	Saat menghapus dokter atau pasien, Anda perlu memasukkan ID yang sesuai dari dokter atau pasien yang ingin dihapus.
-
-•	Data dokter dan pasien akan ditampilkan dalam format yang mudah dibaca di layar.
-
-
 ##  
 "Catatan: Program ini hanya menyediakan fitur dasar untuk mengelola data dokter dan pasien dalam sebuah rumah sakit. Anda dapat mengembangkan program ini lebih lanjut dengan menambahkan fitur-fitur tambahan sesuai dengan kebutuhan."
