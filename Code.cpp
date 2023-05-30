@@ -135,9 +135,24 @@ void showPatientList()
     else
     {
         cout << "Daftar Pasien:\n";
-        for (const Patient &patient : patients)
+
+        // Sort patients, putting emergency patients at the beginning
+        auto comparePatients = [](const Patient &a, const Patient &b) {
+            if (a.isEmergency && !b.isEmergency) {
+                return true;
+            } else if (!a.isEmergency && b.isEmergency) {
+                return false;
+            } else {
+                return a.id < b.id; // Sort non-emergency patients by ID
+            }
+        };
+
+        vector<Patient> sortedPatients = patients;
+        sort(sortedPatients.begin(), sortedPatients.end(), comparePatients);
+
+        for (const Patient &patient : sortedPatients)
         {
-            cout << "ID Pasien: " << patient.id << "|| Nama: " << patient.name << " || Umur: " << patient.age << " || Kelamin: " << patient.gender << " || Dokter: ";
+            cout << "ID Pasien: " << patient.id << " || Nama: " << patient.name << " || Umur: " << patient.age << " || Kelamin: " << patient.gender << " || Dokter: ";
             for (int doctorId : patient.doctorIds)
             {
                 for (const Doctor &doctor : doctors)
@@ -159,6 +174,7 @@ void showPatientList()
         }
     }
 }
+
 
 // Function to display all data
 void displayData()
