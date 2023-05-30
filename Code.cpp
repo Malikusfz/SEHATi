@@ -488,6 +488,7 @@ int main()
             getline(cin, specialist);
             addDoctor(doctorName, specialist);
             cout << "Data dokter berhasil ditambahkan.\n";
+            
         }
         else if (choice == 2)
         {
@@ -507,6 +508,7 @@ int main()
             addPatient(patientName, age, gender, doctorIds, false);
             cin.ignore(); // Wait for the user to press enter
             cout << "Data pasien berhasil ditambahkan.\n";
+            
         }
 
         else if (choice == 3)
@@ -518,6 +520,7 @@ int main()
             removeDoctor(doctorId);
             cout << "Data dokter berhasil dihapus.\n";
             cin.ignore();
+            
         }
         else if (choice == 4)
         {
@@ -527,6 +530,7 @@ int main()
             removePatient(Patientid);
             cout << "Data pasien berhasil dihapus.\n";
             cin.ignore();
+            
         }
         else if (choice == 5)
         {
@@ -542,7 +546,7 @@ int main()
             cout << "ID Dokter: ";
             int doctorId;
             cin >> doctorId;
-            cin.ignore(); // Clear the newline character from the input buffer
+             // Clear the newline character from the input buffer
             findPatientsByDoctor(doctorId);
         }
 
@@ -550,6 +554,7 @@ int main()
         {
             handleEmergencyPatient();
             cin.ignore();
+            
         }
         else if (choice == 9)
         {
@@ -610,11 +615,12 @@ int main()
                 {
                     newDoctorIt->patients.push(patientIt->name); // Use push instead of push_back
                 }
+                cout << "\nRelasi telah diubah\n";
             }
             else
             {
-                cout << "Pasien dengan ID " << patientId << " tidak ditemukan.\n";
-            }
+                cout << " Pasien dengan ID " << patientId << " tidak ditemukan.\n";
+            } 
         }
         else if (choice == 10)
         {
@@ -622,7 +628,8 @@ int main()
             cout << "ID Dokter: ";
             cin >> doctorId;
             removePatientByDoctorQueue(doctorId);
-            cin.ignore();
+            cout << "Data pasien berhasil dihapus.\n";
+            cin.ignore();   
         }
         else if (choice == 0)
         {
@@ -632,10 +639,8 @@ int main()
         {
             cout << "Pilihan tidak valid.\n";
         }
-
         cout << "\nPress Enter to continue...";
         cin.ignore(); // Wait for the user to press enter
-        cout << endl;
         system("cls");
 
     } while (choice != 0);
