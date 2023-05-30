@@ -91,22 +91,30 @@ void removeDoctor(int doctorId)
 }
 
 // Function to remove a patient
-void removePatient(const string &name)
+void removePatient(int patientId)
 {
     patients.erase(
         remove_if(patients.begin(), patients.end(),
-                  [&](const Patient &patient)
-                  { return patient.name == name; }),
+            [&](const Patient &patient)
+            { return patient.id == patientId; }),
         patients.end());
 
     // Remove the patient from the assigned doctors
     for (Doctor &doctor : doctors)
     {
         doctor.patients.erase(
-            remove(doctor.patients.begin(), doctor.patients.end(), name),
+            remove_if(doctor.patients.begin(), doctor.patients.end(),
+                [&](const string &patientName)
+                {
+                    auto patientIt = find_if(patients.begin(), patients.end(),
+                        [&](const Patient &patient)
+                        { return patient.name == patientName; });
+                    return (patientIt == patients.end() || patientIt->id == patientId);
+                }),
             doctor.patients.end());
     }
 }
+
 
 void displayDatadoc()
 {
@@ -349,7 +357,7 @@ void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
 
 int main()
 {
-    int choice;
+    int choice, Patientid;
     string doctorName, specialist, patientName;
     int age;
     char gender;
@@ -410,14 +418,16 @@ int main()
             cin >> doctorId;
             removeDoctor(doctorId);
             cout << "Data dokter berhasil dihapus.\n";
+            cin.ignore();
         }
         else if (choice == 4)
         {
             showPatientList();
-            cout << "Nama Pasien yang akan dihapus: ";
-            getline(cin, patientName);
-            removePatient(patientName);
+            cout << "ID Pasien yang akan dihapus: ";
+            cin >> Patientid;
+            removePatient(Patientid);
             cout << "Data pasien berhasil dihapus.\n";
+            cin.ignore();
         }
         else if (choice == 5)
         {
