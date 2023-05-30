@@ -281,8 +281,11 @@ void handleEmergencyPatient()
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> parent of b051f09 (fix the emergency patient dont show docter name)
 =======
 >>>>>>> parent of b051f09 (fix the emergency patient dont show docter name)
 void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
