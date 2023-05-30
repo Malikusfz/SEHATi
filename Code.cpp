@@ -11,7 +11,7 @@ struct Doctor
     int id;
     string name;
     string specialist;
-    vector<string> patients;
+    queue<string> patients; // Change from vector to queue
 };
 
 struct Patient
@@ -65,7 +65,7 @@ void addPatient(const string &name, int age, char gender, const vector<int> &doc
         {
             if (doctor.id == doctorId)
             {
-                doctor.patients.push_back(name);
+                doctor.patients.push(name); // Use push instead of push_back
                 break;
             }
         }
@@ -77,8 +77,8 @@ void removeDoctor(int doctorId)
 {
     doctors.erase(
         remove_if(doctors.begin(), doctors.end(),
-                  [&](const Doctor &doctor)
-                  { return doctor.id == doctorId; }),
+            [&](const Doctor &doctor)
+            { return doctor.id == doctorId; }),
         doctors.end());
 
     // Remove the doctor from the assigned patients
@@ -95,23 +95,29 @@ void removePatient(int patientId)
 {
     patients.erase(
         remove_if(patients.begin(), patients.end(),
-                  [&](const Patient &patient)
-                  { return patient.id == patientId; }),
+            [&](const Patient &patient)
+            { return patient.id == patientId; }),
         patients.end());
 
     // Remove the patient from the assigned doctors
     for (Doctor &doctor : doctors)
     {
-        doctor.patients.erase(
-            remove_if(doctor.patients.begin(), doctor.patients.end(),
-                      [&](const string &patientName)
-                      {
-                          auto patientIt = find_if(patients.begin(), patients.end(),
-                                                   [&](const Patient &patient)
-                                                   { return patient.name == patientName; });
-                          return (patientIt == patients.end() || patientIt->id == patientId);
-                      }),
-            doctor.patients.end());
+        // Find the patient in the queue and remove them
+        queue<string> tempQueue;
+        while (!doctor.patients.empty())
+        {
+            string patientName = doctor.patients.front();
+            doctor.patients.pop();
+            auto patientIt = find_if(patients.begin(), patients.end(),
+                [&](const Patient &patient)
+                { return patient.name == patientName; });
+            if (patientIt == patients.end() || patientIt->id == patientId)
+            {
+                continue; // Skip this patient
+            }
+            tempQueue.push(patientName);
+        }
+        swap(doctor.patients, tempQueue);
     }
 }
 
@@ -134,57 +140,57 @@ void displayDatadoc()
 // Function to show the list of patients
 void showPatientList()
 {
-    if (patients.empty())
-    {
-        cout << "Tidak ada pasien saat ini.\n";
-    }
-    else
-    {
-        cout << "Daftar Pasien:\n";
+ if (patients.empty())
+ {
+ cout << "Tidak ada pasien saat ini.\n";
+ }
+ else
+ {
+ cout << "Daftar Pasien:\n";
 
-        // Sort patients, putting emergency patients at the beginning
-        auto comparePatients = [](const Patient &a, const Patient &b)
-        {
-            if (a.isEmergency && !b.isEmergency)
-            {
-                return true;
-            }
-            else if (!a.isEmergency && b.isEmergency)
-            {
-                return false;
-            }
-            else
-            {
-                return a.id < b.id; // Sort non-emergency patients by ID
-            }
-        };
+ // Sort patients, putting emergency patients at the beginning
+ auto comparePatients = [](const Patient &a, const Patient &b)
+ {
+ if (a.isEmergency && !b.isEmergency)
+ {
+ return true;
+ }
+ else if (!a.isEmergency && b.isEmergency)
+ {
+ return false;
+ }
+ else
+ {
+ return a.id < b.id; // Sort non-emergency patients by ID
+ }
+ };
 
-        vector<Patient> sortedPatients = patients;
-        sort(sortedPatients.begin(), sortedPatients.end(), comparePatients);
+ vector<Patient> sortedPatients = patients;
+ sort(sortedPatients.begin(), sortedPatients.end(), comparePatients);
 
-        for (const Patient &patient : sortedPatients)
-        {
-            cout << "ID Pasien: " << patient.id << " || Nama: " << patient.name << " || Umur: " << patient.age << " || Kelamin: " << patient.gender << " || Dokter: ";
-            for (int doctorId : patient.doctorIds)
-            {
-                for (const Doctor &doctor : doctors)
-                {
-                    if (doctor.id == doctorId)
-                    {
-                        cout << doctor.name << " ";
-                        break;
-                    }
-                }
-            }
+ for (const Patient &patient : sortedPatients)
+ {
+ cout << "ID Pasien: " << patient.id << " || Nama: " << patient.name << " || Umur: " << patient.age << " || Kelamin: " << patient.gender << " || Dokter: ";
+ for (int doctorId : patient.doctorIds)
+ {
+ for (const Doctor &doctor : doctors)
+ {
+ if (doctor.id == doctorId)
+ {
+ cout << doctor.name << " ";
+ break;
+ }
+ }
+ }
 
-            if (patient.isEmergency)
-            {
-                cout << "(Pasien Darurat)";
-            }
+ if (patient.isEmergency)
+ {
+ cout << "(Pasien Darurat)";
+ }
 
-            cout << endl;
-        }
-    }
+ cout << endl;
+ }
+ }
 }
 
 // Function to display all data
@@ -200,8 +206,8 @@ void displaySortedDoctors()
     vector<Doctor> sortedDoctors = doctors;
 
     sort(sortedDoctors.begin(), sortedDoctors.end(),
-         [](const Doctor &a, const Doctor &b)
-         { return a.patients.size() > b.patients.size(); });
+        [](const Doctor &a, const Doctor &b)
+        { return a.patients.size() > b.patients.size(); });
 
     cout << "Daftar Dokter (urut berdasarkan jumlah pasien):\n";
     for (const Doctor &doctor : sortedDoctors)
@@ -221,14 +227,17 @@ void findPatientsByDoctor(const int doctorId)
             doctorFound = true;
             system("cls");
             cout << "Pasien yang ditangani oleh Dokter: " << doctor.name << "\n"
-                 << "Banyaknya: " << doctor.patients.size() << "\n";
+                << "Banyaknya: " << doctor.patients.size() << "\n";
 
             // Create a vector of patients handled by this doctor
             vector<Patient> patientsByDoctor;
-            for (const string &patientName : doctor.patients)
+            queue<string> tempQueue = doctor.patients; // Copy the queue to a temporary queue
+            while (!tempQueue.empty())
             {
+                string patientName = tempQueue.front();
+                tempQueue.pop();
                 auto patientIt = find_if(patients.begin(), patients.end(), [&](const Patient &patient)
-                                         { return patient.name == patientName; });
+                    { return patient.name == patientName; });
                 if (patientIt != patients.end())
                 {
                     patientsByDoctor.push_back(*patientIt);
@@ -237,14 +246,17 @@ void findPatientsByDoctor(const int doctorId)
 
             // Sort the vector of patients, putting emergency patients at the beginning
             sort(patientsByDoctor.begin(), patientsByDoctor.end(), [](const Patient &a, const Patient &b)
-                 {
-                if (a.isEmergency && !b.isEmergency) {
-                    return true;
-                } else if (!a.isEmergency && b.isEmergency) {
-                    return false;
-                } else {
-                    return a.id < b.id; // Sort non-emergency patients by ID
-                } });
+                {
+                    if (a.isEmergency && !b.isEmergency) {
+                        return true;
+                    }
+                    else if (!a.isEmergency && b.isEmergency) {
+                        return false;
+                    }
+                    else {
+                        return a.id < b.id; // Sort non-emergency patients by ID
+                    }
+                });
 
             // Display the sorted list of patients
             for (const Patient &patient : patientsByDoctor)
@@ -270,8 +282,8 @@ void removePatientByDoctorQueue(int doctorId)
 {
     // Find the doctor
     auto doctorIt = find_if(doctors.begin(), doctors.end(),
-                            [&](const Doctor &doctor)
-                            { return doctor.id == doctorId; });
+        [&](const Doctor &doctor)
+        { return doctor.id == doctorId; });
 
     if (doctorIt != doctors.end())
     {
@@ -279,31 +291,46 @@ void removePatientByDoctorQueue(int doctorId)
         if (!doctorIt->patients.empty())
         {
             // Find the first emergency patient
-            auto emergencyPatientIt = find_if(doctorIt->patients.begin(), doctorIt->patients.end(),
-                                              [&](const string &patientName)
-                                              {
-                                                  auto patientIt = find_if(patients.begin(), patients.end(),
-                                                                           [&](const Patient &patient)
-                                                                           { return patient.name == patientName; });
-                                                  return (patientIt != patients.end() && patientIt->isEmergency);
-                                              });
+            string emergencyPatientName;
+            bool emergencyPatientFound = false;
+            queue<string> tempQueue; // Temporary queue to store non-emergency patients
+            while (!doctorIt->patients.empty())
+            {
+                string patientName = doctorIt->patients.front();
+                doctorIt->patients.pop();
+                auto patientIt = find_if(patients.begin(), patients.end(),
+                    [&](const Patient &patient)
+                    { return patient.name == patientName; });
+                if (patientIt != patients.end() && patientIt->isEmergency)
+                {
+                    emergencyPatientName = patientName;
+                                        emergencyPatientFound = true;
+                    break;
+                }
+                else
+                {
+                    tempQueue.push(patientName);
+                }
+            }
+
+            // Put the non-emergency patients back in the doctor's queue
+            while (!tempQueue.empty())
+            {
+                doctorIt->patients.push(tempQueue.front());
+                tempQueue.pop();
+            }
 
             // If an emergency patient is found, remove them
-            if (emergencyPatientIt != doctorIt->patients.end())
+            if (emergencyPatientFound)
             {
-                const string &patientName = *emergencyPatientIt;
-
                 // Find the patient by name
                 auto patientIt = find_if(patients.begin(), patients.end(),
-                                         [&](const Patient &patient)
-                                         { return patient.name == patientName; });
+                    [&](const Patient &patient)
+                    { return patient.name == emergencyPatientName; });
 
                 if (patientIt != patients.end())
                 {
                     int patientId = patientIt->id;
-
-                    // Remove the patient from the doctor's list
-                    doctorIt->patients.erase(emergencyPatientIt);
 
                     // Remove the patient from the overall patient list
                     removePatient(patientId);
@@ -312,18 +339,16 @@ void removePatientByDoctorQueue(int doctorId)
             else // If no emergency patient is found, remove the first non-emergency patient
             {
                 const string &patientName = doctorIt->patients.front();
+                doctorIt->patients.pop();
 
                 // Find the patient by name
                 auto patientIt = find_if(patients.begin(), patients.end(),
-                                         [&](const Patient &patient)
-                                         { return patient.name == patientName; });
+                    [&](const Patient &patient)
+                    { return patient.name == patientName; });
 
                 if (patientIt != patients.end())
                 {
                     int patientId = patientIt->id;
-
-                    // Remove the patient from the doctor's list
-                    doctorIt->patients.erase(doctorIt->patients.begin());
 
                     // Remove the patient from the overall patient list
                     removePatient(patientId);
@@ -338,10 +363,10 @@ void handleEmergencyPatient()
 {
     // Find the doctor with the fewest patients
     auto minPatientsDoctor = min_element(doctors.begin(), doctors.end(),
-                                         [](const Doctor &a, const Doctor &b)
-                                         {
-                                             return a.patients.size() < b.patients.size();
-                                         });
+        [](const Doctor &a, const Doctor &b)
+        {
+            return a.patients.size() < b.patients.size();
+        });
     if (minPatientsDoctor != doctors.end())
     {
         // Input data pasien darurat
@@ -370,7 +395,7 @@ void handleEmergencyPatient()
         patients.push_back(emergencyPatient);
 
         // Tambahkan pasien darurat ke dokter yang menanganinya
-        minPatientsDoctor->patients.push_back(emergencyPatientName);
+        minPatientsDoctor->patients.push(emergencyPatientName); // Use push instead of push_back
 
         cout << "Pasien darurat " << emergencyPatientName << " ditangani oleh dokter " << minPatientsDoctor->name << endl;
     }
@@ -384,8 +409,8 @@ void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
 {
     // Find the patient
     auto patientIt = find_if(patients.begin(), patients.end(),
-                             [&](const Patient &patient)
-                             { return patient.name == patientName; });
+        [&](const Patient &patient)
+        { return patient.name == patientName; });
 
     if (patientIt != patients.end())
     {
@@ -399,22 +424,30 @@ void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
 
         // Remove the patient from the old doctor's list
         auto oldDoctorIt = find_if(doctors.begin(), doctors.end(),
-                                   [&](const Doctor &doctor)
-                                   { return doctor.id == oldDoctorId; });
+            [&](const Doctor &doctor)
+            { return doctor.id == oldDoctorId; });
         if (oldDoctorIt != doctors.end())
         {
-            oldDoctorIt->patients.erase(
-                remove(oldDoctorIt->patients.begin(), oldDoctorIt->patients.end(), patientName),
-                oldDoctorIt->patients.end());
+            queue<string> tempQueue; // Temporary queue to store non-matching patients
+            while (!oldDoctorIt->patients.empty())
+            {
+                string currentPatientName = oldDoctorIt->patients.front();
+                oldDoctorIt->patients.pop();
+                if (currentPatientName != patientName)
+                {
+                    tempQueue.push(currentPatientName);
+                }
+            }
+            swap(oldDoctorIt->patients, tempQueue);
         }
 
         // Add the patient to the new doctor's list
         auto newDoctorIt = find_if(doctors.begin(), doctors.end(),
-                                   [&](const Doctor &doctor)
-                                   { return doctor.id == newDoctorId; });
+            [&](const Doctor &doctor)
+            { return doctor.id == newDoctorId; });
         if (newDoctorIt != doctors.end())
         {
-            newDoctorIt->patients.push_back(patientName);
+            newDoctorIt->patients.push(patientName); // Use push instead of push_back
         }
     }
 }
@@ -472,6 +505,7 @@ int main()
             cin >> doctorId;
             vector<int> doctorIds(1, doctorId); // Create a vector with a single element
             addPatient(patientName, age, gender, doctorIds, false);
+            cin.ignore(); // Wait for the user to press enter
             cout << "Data pasien berhasil ditambahkan.\n";
         }
 
@@ -522,13 +556,13 @@ int main()
             showPatientList();
             cout << "ID Pasien: ";
             int patientId;
-            cin >> patientId;
+                        cin >> patientId;
             cin.ignore(); // Clear the newline character from the input buffer
 
             // Find the patient with the specified ID
             auto patientIt = find_if(patients.begin(), patients.end(),
-                                     [&](const Patient &patient)
-                                     { return patient.id == patientId; });
+                [&](const Patient &patient)
+                { return patient.id == patientId; });
 
             if (patientIt != patients.end())
             {
@@ -544,13 +578,21 @@ int main()
                 for (int oldDoctorId : patientIt->doctorIds)
                 {
                     auto oldDoctorIt = find_if(doctors.begin(), doctors.end(),
-                                               [&](const Doctor &doctor)
-                                               { return doctor.id == oldDoctorId; });
+                        [&](const Doctor &doctor)
+                        { return doctor.id == oldDoctorId; });
                     if (oldDoctorIt != doctors.end())
                     {
-                        oldDoctorIt->patients.erase(
-                            remove(oldDoctorIt->patients.begin(), oldDoctorIt->patients.end(), patientIt->name),
-                            oldDoctorIt->patients.end());
+                        queue<string> tempQueue; // Temporary queue to store non-matching patients
+                        while (!oldDoctorIt->patients.empty())
+                        {
+                            string currentPatientName = oldDoctorIt->patients.front();
+                            oldDoctorIt->patients.pop();
+                            if (currentPatientName != patientIt->name)
+                            {
+                                tempQueue.push(currentPatientName);
+                            }
+                        }
+                        swap(oldDoctorIt->patients, tempQueue);
                     }
                 }
 
@@ -562,11 +604,11 @@ int main()
 
                 // Add the patient to the new doctor's list
                 auto newDoctorIt = find_if(doctors.begin(), doctors.end(),
-                                           [&](const Doctor &doctor)
-                                           { return doctor.id == newDoctorId; });
+                    [&](const Doctor &doctor)
+                    { return doctor.id == newDoctorId; });
                 if (newDoctorIt != doctors.end())
                 {
-                    newDoctorIt->patients.push_back(patientIt->name);
+                    newDoctorIt->patients.push(patientIt->name); // Use push instead of push_back
                 }
             }
             else
@@ -600,3 +642,6 @@ int main()
 
     return 0;
 }
+
+
+
