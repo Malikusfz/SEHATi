@@ -95,8 +95,8 @@ void removePatient(int patientId)
 {
     patients.erase(
         remove_if(patients.begin(), patients.end(),
-            [&](const Patient &patient)
-            { return patient.id == patientId; }),
+                  [&](const Patient &patient)
+                  { return patient.id == patientId; }),
         patients.end());
 
     // Remove the patient from the assigned doctors
@@ -104,17 +104,16 @@ void removePatient(int patientId)
     {
         doctor.patients.erase(
             remove_if(doctor.patients.begin(), doctor.patients.end(),
-                [&](const string &patientName)
-                {
-                    auto patientIt = find_if(patients.begin(), patients.end(),
-                        [&](const Patient &patient)
-                        { return patient.name == patientName; });
-                    return (patientIt == patients.end() || patientIt->id == patientId);
-                }),
+                      [&](const string &patientName)
+                      {
+                          auto patientIt = find_if(patients.begin(), patients.end(),
+                                                   [&](const Patient &patient)
+                                                   { return patient.name == patientName; });
+                          return (patientIt == patients.end() || patientIt->id == patientId);
+                      }),
             doctor.patients.end());
     }
 }
-
 
 void displayDatadoc()
 {
@@ -267,6 +266,25 @@ void findPatientsByDoctor(const int doctorId)
     }
 }
 
+void removePatientByDoctorQueue(int doctorId)
+{
+    queue<int> patientIdsToRemove;
+    for (const Patient &patient : patients)
+    {
+        if (find(patient.doctorIds.begin(), patient.doctorIds.end(), doctorId) != patient.doctorIds.end())
+        {
+            patientIdsToRemove.push(patient.id);
+        }
+    }
+
+    while (!patientIdsToRemove.empty())
+    {
+        int patientId = patientIdsToRemove.front();
+        patientIdsToRemove.pop();
+        removePatient(patientId);
+    }
+}
+
 // Function to handle emergency patients
 void handleEmergencyPatient()
 {
@@ -315,7 +333,6 @@ void handleEmergencyPatient()
     }
 }
 
-
 void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
 {
     // Find the patient
@@ -357,7 +374,7 @@ void changeDoctor(const string &patientName, int oldDoctorId, int newDoctorId)
 
 int main()
 {
-    int choice, Patientid;
+    int choice, Patientid, doctorId;
     string doctorName, specialist, patientName;
     int age;
     char gender;
@@ -376,6 +393,7 @@ int main()
         cout << "7. Cari Pasien berdasarkan Dokter\n";
         cout << "8. Tangani Pasien Darurat\n";
         cout << "9. Edit Relasi Dokter-Pasien\n";
+        cout << "10. Hapus Pasien Pasca-Konsultasi\n";
         cout << "0. Keluar\n";
         cout << "Pilihan: ";
         cin >> choice;
@@ -451,7 +469,6 @@ int main()
         {
             handleEmergencyPatient();
             cin.ignore();
-    
         }
         else if (choice == 9)
         {
@@ -510,7 +527,13 @@ int main()
                 cout << "Pasien dengan ID " << patientId << " tidak ditemukan.\n";
             }
         }
-
+        else if (choice == 10)
+        {
+            displayDatadoc();
+            cout << "ID Dokter: ";
+            cin >> doctorId;
+            removePatientByDoctorQueue(doctorId);
+        }
         else if (choice == 0)
         {
             cout << "Terima kasih telah menggunakan aplikasi ini.\n";
