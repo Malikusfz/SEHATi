@@ -18,6 +18,7 @@ Program ini memiliki beberapa fitur utama:
 7.	Cari Pasien berdasarkan Dokter: Menampilkan daftar pasien yang ditangani oleh seorang dokter berdasarkan ID dokter yang diberikan.
 8.	Tangani Pasien Darurat: Menambahkan seorang pasien darurat ke dalam sistem. Pasien darurat akan ditangani oleh dokter dengan jumlah pasien paling sedikit.
 9.	Edit Relasi Dokter-Pasien: Mengubah dokter yang menangani seorang pasien berdasarkan ID pasien.
+10.	Hapus Pasien Pasca-Konsultasi: Menghapus data pasien yang telah selesai konsultasi dengan dokter.
 
 ## Penggunaan
 
