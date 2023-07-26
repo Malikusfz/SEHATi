@@ -1,7 +1,7 @@
 
 # Sistem Informasi Program Rumah Sakit SEHATi
 
-Sistem Informasi Rumah Sakit SEHATi adalah program berbasis teks yang menyediakan fitur untuk mengelola data dokter dan pasien dalam sebuah rumah sakit. Program ini ditulis dalam bahasa C++ dan menggunakan beberapa struktur data seperti vector dan struct untuk menyimpan informasi dokter dan pasien.
+Sistem Informasi Rumah Sakit SEHATi adalah program berbasis teks yang menyediakan fitur untuk mengelola data dokter dan pasien dalam sebuah rumah sakit. Program ini ditulis dalam bahasa C++ dan menggunakan beberapa struktur data seperti vector dan queue untuk menyimpan informasi dokter dan pasien.
 
 
 
