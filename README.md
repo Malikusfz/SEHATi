@@ -35,4 +35,4 @@ Beberapa catatan penting:
 
 
 ##  
-"Catatan: Program ini hanya menyediakan fitur dasar untuk mengelola data dokter dan pasien dalam sebuah rumah sakit. Anda dapat mengembangkan program ini lebih lanjut dengan menambahkan fitur-fitur tambahan sesuai dengan kebutuhan."
+Catatan: Program ini hanya menyediakan fitur dasar untuk mengelola data dokter dan pasien dalam sebuah rumah sakit. Anda dapat mengembangkan program ini lebih lanjut dengan menambahkan fitur-fitur tambahan sesuai dengan kebutuhan.
